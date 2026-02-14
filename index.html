@@ -11,19 +11,117 @@
 
   body {
     min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
+    overflow-x: hidden;
+    font-family: 'Quicksand', sans-serif;
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text y='24' font-size='24'>💖</text></svg>") 16 16, auto;
+  }
+
+  /* ===== SCENE 1: ENVELOPE ===== */
+  .scene-envelope {
+    position: fixed;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 100;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
-    overflow: hidden;
-    font-family: 'Quicksand', sans-serif;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
   }
+
+  .scene-envelope.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .envelope-wrap {
+    text-align: center;
+    animation: fadeInUp 1.5s ease-out;
+  }
+
+  .envelope {
+    width: 200px;
+    height: 140px;
+    margin: 0 auto 30px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .envelope:hover { transform: scale(1.08); }
+
+  .envelope-body {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff6b8a, #ff4466);
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(255, 70, 100, 0.3);
+  }
+
+  .envelope-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-top: 80px solid #ff8fa8;
+    transform-origin: top;
+    transition: transform 0.6s ease;
+    z-index: 2;
+  }
+
+  .envelope:hover .envelope-flap {
+    transform: rotateX(180deg);
+  }
+
+  .envelope-heart {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    z-index: 1;
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  .envelope-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: rgba(255, 180, 200, 0.9);
+    margin-top: 10px;
+  }
+
+  .tap-hint {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: rgba(255, 150, 170, 0.5);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* ===== SCENE 2: MAIN CONTENT ===== */
+  .scene-main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    padding: 40px 20px;
+  }
+
+  .scene-main.visible { opacity: 1; }
 
   .container {
     text-align: center;
     z-index: 2;
     padding: 40px;
-    animation: fadeInUp 2s ease-out;
   }
 
   .heart-icon {
@@ -31,6 +129,12 @@
     animation: heartbeat 1.5s ease-in-out infinite;
     display: inline-block;
     filter: drop-shadow(0 0 20px rgba(255, 70, 100, 0.6));
+    cursor: pointer;
+    transition: filter 0.3s;
+  }
+
+  .heart-icon:hover {
+    filter: drop-shadow(0 0 40px rgba(255, 70, 100, 1));
   }
 
   h1 {
@@ -49,6 +153,7 @@
     letter-spacing: 2px;
   }
 
+  /* Typewriter message */
   .message {
     max-width: 500px;
     margin: 0 auto;
@@ -66,12 +171,36 @@
     font-weight: 300;
   }
 
+  .typewriter {
+    min-height: 4em;
+  }
+
+  .typewriter .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background: #ff6b8a;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  .typewriter .cursor.hidden { display: none; }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
   .message .signature {
     margin-top: 20px;
     font-family: 'Dancing Script', cursive;
     font-size: 1.6rem;
     color: #ff6b8a;
+    opacity: 0;
+    transition: opacity 1s ease;
   }
+
+  .signature.visible { opacity: 1; }
 
   .date {
     margin-top: 25px;
@@ -80,7 +209,99 @@
     letter-spacing: 3px;
   }
 
-  /* Floating hearts */
+  /* ===== LOVE COUNTER ===== */
+  .love-counter {
+    margin-top: 35px;
+    padding: 20px 30px;
+    background: rgba(255, 100, 130, 0.08);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 100, 130, 0.12);
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+    user-select: none;
+  }
+
+  .love-counter:hover {
+    transform: scale(1.03);
+    background: rgba(255, 100, 130, 0.15);
+  }
+
+  .love-counter:active { transform: scale(0.97); }
+
+  .love-counter .counter-label {
+    font-size: 0.85rem;
+    color: rgba(255, 180, 200, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .love-counter .counter-value {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: #ff6b8a;
+  }
+
+  /* ===== TAP HEARTS ===== */
+  .tap-heart {
+    position: fixed;
+    pointer-events: none;
+    font-size: 30px;
+    z-index: 50;
+    animation: tapFloat 1.5s ease-out forwards;
+  }
+
+  @keyframes tapFloat {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1.5) rotate(25deg); }
+  }
+
+  /* ===== MUSIC TOGGLE ===== */
+  .music-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 100, 130, 0.15);
+    border: 1px solid rgba(255, 100, 130, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 60;
+    font-size: 22px;
+    transition: transform 0.3s, background 0.3s;
+    backdrop-filter: blur(10px);
+  }
+
+  .music-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 100, 130, 0.3);
+  }
+
+  .music-btn.playing { animation: musicPulse 1s ease-in-out infinite; }
+
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 100, 130, 0.3); }
+    50% { box-shadow: 0 0 0 12px rgba(255, 100, 130, 0); }
+  }
+
+  /* ===== SPARKLE TRAIL ===== */
+  .sparkle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 14px;
+    z-index: 40;
+    animation: sparkleFade 0.8s ease-out forwards;
+  }
+
+  @keyframes sparkleFade {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0) translateY(-20px); }
+  }
+
+  /* ===== FLOATING HEARTS BG ===== */
   .hearts-bg {
     position: fixed;
     top: 0; left: 0;
@@ -127,24 +348,9 @@
     z-index: 0;
   }
 
-  .glow-1 {
-    background: #ff4466;
-    top: 20%; left: 10%;
-    animation: drift1 8s ease-in-out infinite alternate;
-  }
-
-  .glow-2 {
-    background: #ff6b9d;
-    bottom: 20%; right: 10%;
-    animation: drift2 10s ease-in-out infinite alternate;
-  }
-
-  .glow-3 {
-    background: #cc3366;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    animation: drift3 12s ease-in-out infinite alternate;
-  }
+  .glow-1 { background: #ff4466; top: 20%; left: 10%; animation: drift1 8s ease-in-out infinite alternate; }
+  .glow-2 { background: #ff6b9d; bottom: 20%; right: 10%; animation: drift2 10s ease-in-out infinite alternate; }
+  .glow-3 { background: #cc3366; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: drift3 12s ease-in-out infinite alternate; }
 
   @keyframes drift1 { to { transform: translate(50px, 30px); } }
   @keyframes drift2 { to { transform: translate(-40px, -50px); } }
@@ -153,48 +359,228 @@
 </head>
 <body>
 
+<!-- SCENE 1: Envelope -->
+<div class="scene-envelope" id="sceneEnvelope">
+  <div class="envelope-wrap">
+    <div class="envelope" id="envelope" onclick="openEnvelope()">
+      <div class="envelope-flap"></div>
+      <div class="envelope-body">
+        <div class="envelope-heart">💌</div>
+      </div>
+    </div>
+    <p class="envelope-text">Sana bir mektubum var...</p>
+    <p class="tap-hint">zarfa dokun 💕</p>
+  </div>
+</div>
+
+<!-- SCENE 2: Main -->
 <div class="glow glow-1"></div>
 <div class="glow glow-2"></div>
 <div class="glow glow-3"></div>
-
 <div class="hearts-bg" id="hearts"></div>
 
-<div class="container">
-  <div class="heart-icon">💖</div>
-  <h1>Sevgililer Günün Kutlu Olsun</h1>
-  <p class="subtitle">14 Şubat 2026</p>
+<div class="scene-main" id="sceneMain">
+  <div class="container">
+    <div class="heart-icon" id="bigHeart" onclick="burstHearts(this)">💖</div>
+    <h1>Sevgililer Günün Kutlu Olsun</h1>
+    <p class="subtitle">14 Şubat 2026</p>
 
-  <div class="message">
-    <p>
-      Seninle geçirdiğim her an hayatımın en güzel anı.
-      Gülüşün güneşim, varlığın huzurum.
-      Bugün ve her gün seni seviyorum. 💕
-    </p>
-    <p class="signature">— Seni Çok Seven Batuhan ❤️</p>
+    <div class="message">
+      <p class="typewriter" id="typewriter"><span class="cursor" id="cursor"></span></p>
+      <p class="signature" id="signature">— Seni Çok Seven Batuhan ❤️</p>
+    </div>
+
+    <div class="love-counter" id="loveCounter" onclick="addLove()">
+      <div class="counter-label">SEVGİ SAYACI</div>
+      <div class="counter-value">💖 <span id="loveCount">0</span></div>
+    </div>
+
+    <p class="date">♡ 14 . 02 . 2026 ♡</p>
   </div>
-
-  <p class="date">♡ 14 . 02 . 2026 ♡</p>
 </div>
 
-<script>
-  // Floating hearts
-  const container = document.getElementById('hearts');
-  const heartEmojis = ['💕', '💖', '💗', '💓', '❤️', '💘', '💝', '🌹', '✨'];
+<!-- Music Button -->
+<div class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Müzik aç/kapa">🎵</div>
 
-  function createHeart() {
-    const heart = document.createElement('span');
-    heart.className = 'float-heart';
-    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-    heart.style.left = Math.random() * 100 + '%';
-    heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
-    heart.style.animationDuration = (Math.random() * 6 + 8) + 's';
-    heart.style.animationDelay = Math.random() * 2 + 's';
-    container.appendChild(heart);
-    setTimeout(() => heart.remove(), 16000);
+<script>
+  // ===== ENVELOPE OPEN =====
+  function openEnvelope() {
+    const env = document.getElementById('sceneEnvelope');
+    const main = document.getElementById('sceneMain');
+    env.classList.add('hidden');
+    setTimeout(() => {
+      main.classList.add('visible');
+      startTypewriter();
+      startFloatingHearts();
+    }, 600);
   }
 
-  setInterval(createHeart, 600);
-  for (let i = 0; i < 15; i++) setTimeout(createHeart, i * 200);
+  // ===== TYPEWRITER =====
+  const loveText = "Seninle geçirdiğim her an hayatımın en güzel anı. Gülüşün güneşim, varlığın huzurum. Bugün ve her gün seni seviyorum. 💕";
+  let charIndex = 0;
+
+  function startTypewriter() {
+    const el = document.getElementById('typewriter');
+    const cursor = document.getElementById('cursor');
+    const sig = document.getElementById('signature');
+
+    function typeChar() {
+      if (charIndex < loveText.length) {
+        cursor.insertAdjacentText('beforebegin', loveText[charIndex]);
+        charIndex++;
+        setTimeout(typeChar, 45 + Math.random() * 30);
+      } else {
+        cursor.classList.add('hidden');
+        sig.classList.add('visible');
+      }
+    }
+    setTimeout(typeChar, 500);
+  }
+
+  // ===== FLOATING HEARTS =====
+  const heartEmojis = ['💕','💖','💗','💓','❤️','💘','💝','🌹','✨'];
+
+  function startFloatingHearts() {
+    const container = document.getElementById('hearts');
+    function createHeart() {
+      const heart = document.createElement('span');
+      heart.className = 'float-heart';
+      heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
+      heart.style.animationDuration = (Math.random() * 6 + 8) + 's';
+      heart.style.animationDelay = Math.random() * 2 + 's';
+      container.appendChild(heart);
+      setTimeout(() => heart.remove(), 16000);
+    }
+    setInterval(createHeart, 800);
+    for (let i = 0; i < 10; i++) setTimeout(createHeart, i * 300);
+  }
+
+  // ===== TAP HEARTS (touch/click anywhere) =====
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.music-btn') || e.target.closest('.envelope') || e.target.closest('.love-counter')) return;
+    const heart = document.createElement('span');
+    heart.className = 'tap-heart';
+    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    heart.style.left = e.clientX + 'px';
+    heart.style.top = e.clientY + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1500);
+  });
+
+  // ===== SPARKLE MOUSE TRAIL =====
+  let lastSparkle = 0;
+  document.addEventListener('mousemove', (e) => {
+    const now = Date.now();
+    if (now - lastSparkle < 80) return;
+    lastSparkle = now;
+    const sparkle = document.createElement('span');
+    sparkle.className = 'sparkle';
+    sparkle.textContent = Math.random() > 0.5 ? '✨' : '💫';
+    sparkle.style.left = e.clientX + 'px';
+    sparkle.style.top = e.clientY + 'px';
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 800);
+  });
+
+  // ===== LOVE COUNTER =====
+  let loveCount = parseInt(localStorage.getItem('loveCount') || '0');
+  document.getElementById('loveCount').textContent = loveCount;
+
+  function addLove() {
+    loveCount++;
+    document.getElementById('loveCount').textContent = loveCount;
+    localStorage.setItem('loveCount', loveCount);
+
+    // Burst mini hearts from button
+    const btn = document.getElementById('loveCounter');
+    const rect = btn.getBoundingClientRect();
+    for (let i = 0; i < 5; i++) {
+      const h = document.createElement('span');
+      h.className = 'tap-heart';
+      h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+      h.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 80) + 'px';
+      h.style.top = (rect.top + (Math.random() - 0.5) * 30) + 'px';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1500);
+    }
+  }
+
+  // ===== BIG HEART BURST =====
+  function burstHearts(el) {
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 12; i++) {
+      const h = document.createElement('span');
+      h.className = 'tap-heart';
+      h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+      h.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 200) + 'px';
+      h.style.top = (rect.top + rect.height / 2 + (Math.random() - 0.5) * 150) + 'px';
+      h.style.fontSize = (20 + Math.random() * 25) + 'px';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1500);
+    }
+  }
+
+  // ===== MUSIC (Web Audio API - soft melody) =====
+  let audioCtx, musicPlaying = false;
+
+  function toggleMusic() {
+    const btn = document.getElementById('musicBtn');
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (musicPlaying) {
+      musicPlaying = false;
+      btn.classList.remove('playing');
+      btn.textContent = '🎵';
+      return;
+    }
+    musicPlaying = true;
+    btn.classList.add('playing');
+    btn.textContent = '🎶';
+    playMelody();
+  }
+
+  function playNote(freq, start, dur, vol = 0.08) {
+    if (!musicPlaying) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, audioCtx.currentTime + start);
+    gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + start + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + start);
+    osc.stop(audioCtx.currentTime + start + dur);
+  }
+
+  function playMelody() {
+    // "Can't Help Falling in Love" inspired simple melody
+    const notes = [
+      [261.6, 0, 0.6],    // C
+      [329.6, 0.6, 0.6],  // E
+      [392.0, 1.2, 0.6],  // G
+      [440.0, 1.8, 0.9],  // A
+      [392.0, 2.7, 0.6],  // G
+      [329.6, 3.3, 0.6],  // E
+      [349.2, 3.9, 0.6],  // F
+      [329.6, 4.5, 0.6],  // E
+      [293.7, 5.1, 0.6],  // D
+      [261.6, 5.7, 1.2],  // C
+      [293.7, 7.2, 0.6],  // D
+      [329.6, 7.8, 0.6],  // E
+      [349.2, 8.4, 0.6],  // F
+      [392.0, 9.0, 0.6],  // G
+      [440.0, 9.6, 0.9],  // A
+      [523.3, 10.5, 1.2], // C5
+    ];
+    notes.forEach(([f, s, d]) => playNote(f, s, d));
+    // Loop
+    setTimeout(() => { if (musicPlaying) playMelody(); }, 12500);
+  }
 </script>
 
 </body>
